@@ -23,6 +23,8 @@ namespace GHelper.UI
     {
         private float _radius;
         private PointF _thumbPos;
+        private PointF _thumbTargetPos;
+        private PointF _snapAnimationStartPos;
         private SizeF _barSize;
         private PointF _barPos;
 
@@ -37,6 +39,11 @@ namespace GHelper.UI
         private float _tickAlpha;
         private float _tickTarget;
         private readonly System.Windows.Forms.Timer _animTimer = new() { Interval = 30 };
+        // Snap Animation
+        private CancellationTokenSource _snapAnimationCts;
+        private const int SnapAnimationDurationMs = 300; // 300ms animation duration
+        private const int SnapAnimationIntervalMs = 5;  // 1000 / FPS
+        private bool _snapAnimating = false;
 
 
         public Color accentColor = Color.FromArgb(255, 58, 174, 239);
@@ -53,15 +60,44 @@ namespace GHelper.UI
             TabStop = true;
 
             _animTimer.Tick += delegate
+            _snapAnimationCts = new CancellationTokenSource();
+        }
+
+        private static float EaseOutQuint(float t)
+        {
+            if (t <= 0f) return 0f;
+            if (t >= 1f) return 1f;
+            return 1f - (float)Math.Pow(1f - t, 5);
+        }
+
+        private async Task RunSnapAnimation(CancellationToken cancellationToken)
+        {
+            var startTime = DateTime.UtcNow;
+
+            while (!cancellationToken.IsCancellationRequested)
             {
                 _innerScale += (_innerTarget - _innerScale) * 0.3f;
                 _tickAlpha += (_tickTarget - _tickAlpha) * 0.3f;
                 if (Math.Abs(_innerTarget - _innerScale) < 0.01f && Math.Abs(_tickTarget - _tickAlpha) < 1f)
+                var elapsed = (DateTime.UtcNow - startTime).TotalMilliseconds;
+                float t = (float)(elapsed / SnapAnimationDurationMs);
+
+                if (t >= 1f)
                 {
                     _innerScale = _innerTarget;
                     _tickAlpha = _tickTarget;
                     _animTimer.Stop();
+                    _thumbPos = _thumbTargetPos;
+                    _snapAnimating = false;
+                    Invalidate();
+                    return;
                 }
+
+                float eased = EaseOutQuint(t);
+                _thumbPos = new PointF(
+                    _snapAnimationStartPos.X + (_thumbTargetPos.X - _snapAnimationStartPos.X) * eased,
+                    _snapAnimationStartPos.Y + (_thumbTargetPos.Y - _snapAnimationStartPos.Y) * eased);
+
                 Invalidate();
             };
         }
@@ -71,6 +107,15 @@ namespace GHelper.UI
             _innerTarget = target;
             _tickTarget = target == InnerNormal ? 0 : 120;
             _animTimer.Start();
+                try
+                {
+                    await Task.Delay(SnapAnimationIntervalMs, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+            }
         }
 
 
@@ -107,6 +152,7 @@ namespace GHelper.UI
             }
         }
         private int _value = 50;
+        private float _thumbValue;
         public int Value
         {
             get => _value;
@@ -150,6 +196,7 @@ namespace GHelper.UI
                         Value = supportedValues.Where(v => v > Value).DefaultIfEmpty(Value).Min();
                     else
                         Value = Math.Min(Max, Value + Step);
+                    Value = Math.Min(Max, Value + Step);
                     break;
                 case Keys.Left:
                 case Keys.Down:
@@ -157,6 +204,7 @@ namespace GHelper.UI
                         Value = supportedValues.Where(v => v < Value).DefaultIfEmpty(Value).Max();
                     else
                         Value = Math.Max(Min, Value - Step);
+                    Value = Math.Max(Min, Value - Step);
                     break;
             }
 
@@ -171,6 +219,7 @@ namespace GHelper.UI
 
             Brush brushAccent = new SolidBrush(accentColor);
             Brush brushEmpty = new SolidBrush(RForm.chartGrid);
+            Brush brushEmpty = new SolidBrush(Color.Gray);
             Brush brushBorder = new SolidBrush(borderColor);
 
             float thumbX = _dragX ?? _thumbPos.X;
@@ -194,9 +243,12 @@ namespace GHelper.UI
                     e.Graphics.FillRectangle(brushMark, x, _barPos.Y + _barSize.Height + gap, tickW, tickH);
                 }
             }
+                _barPos.X, _barPos.Y, _thumbPos.X - _barPos.X, _barSize.Height);
 
             e.Graphics.FillCircle(brushBorder, thumbX, _thumbPos.Y, _radius);
             e.Graphics.FillCircle(brushAccent, thumbX, _thumbPos.Y, _innerScale * _radius);
+            e.Graphics.FillCircle(brushBorder, _thumbPos.X, _thumbPos.Y, _radius);
+            e.Graphics.FillCircle(brushAccent, _thumbPos.X, _thumbPos.Y, 0.7f * _radius);
         }
 
         protected override void OnResize(EventArgs e)
@@ -205,24 +257,43 @@ namespace GHelper.UI
             RecalculateParameters();
         }
 
-        public bool Exponential { get; set; }
-
-        private float ValueToX(int value) => _barPos.X + _barSize.Width *
-            (Exponential ? MathF.Log((float)value / Min) / MathF.Log((float)Max / Min)
-                         : (float)(value - Min) / (Max - Min));
-
         private void RecalculateParameters()
         {
             _radius = 0.4F * ClientSize.Height;
             _barSize = new SizeF(ClientSize.Width - 2 * _radius, ClientSize.Height * 0.15F);
             _barPos = new PointF(_radius, (ClientSize.Height - _barSize.Height) / 2);
-            _thumbPos = new PointF(
-                ValueToX(Value),
-                _barPos.Y + 0.5f * _barSize.Height);
-            Invalidate();
+
+            var targetX = _barSize.Width / (Max - Min) * (Value - Min) + _barPos.X;
+            _thumbTargetPos = new PointF(targetX, _barPos.Y + 0.5f * _barSize.Height); // Position the thumb needs to snap to
+
+            // Don't snap to values while slider is dragged
+            if (_moving)
+            {
+                return;
+            }
+
+            // Start snap animation from current position to target
+            _snapAnimationStartPos = _thumbPos;
+            if (_snapAnimationStartPos.X == _thumbTargetPos.X && _snapAnimationStartPos.Y == _thumbTargetPos.Y)
+            {
+                return;
+            }
+
+            StartSnapAnimation();
+        }
+
+        private void StartSnapAnimation()
+        {
+            // Cancel any existing animation
+            _snapAnimationCts.Cancel();
+            _snapAnimationCts = new CancellationTokenSource();
+
+            _snapAnimating = true;
+            _ = RunSnapAnimation(_snapAnimationCts.Token);
         }
 
         bool _moving = false;
+        bool _thumbClicked = false;
         SizeF _delta;
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -231,16 +302,22 @@ namespace GHelper.UI
 
             Focus();
 
-            // Difference between tumb and mouse position.
+            // Difference between thumb and mouse position.
             _delta = new SizeF(e.Location.X - _thumbPos.X, e.Location.Y - _thumbPos.Y);
             if (_delta.Width * _delta.Width + _delta.Height * _delta.Height <= _radius * _radius)
             {
                 // Clicking inside thumb.
                 _moving = true;
+                // Clicking inside thumb. - mark it but don't start dragging yet
+                _thumbClicked = true;
+                _snapAnimating = false;
+                _snapAnimationCts.Cancel();
             }
 
             AnimateInner(InnerPressed);
             _calculateValue(e);
+            else // Clicking on slider - snap to that position
+                _calculateValue(e);
 
         }
 
@@ -266,15 +343,27 @@ namespace GHelper.UI
             Value = (int)Math.Round(Exponential
                 ? Min * MathF.Pow((float)Max / Min, t)
                 : Min + t * (Max - Min));
+            Value = (int)Math.Round(Min + (thumbX - _barPos.X) * (Max - Min) / _barSize.Width);
 
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+
+            // If thumb was clicked and mouse is moving, start dragging
+            if (_thumbClicked && !_moving)
+                _moving = true;
+
             if (_moving)
             {
+                float thumbX = Math.Clamp(e.Location.X, _barPos.X, _barPos.X + _barSize.Width);
+
+                // Update precise thumb position 
+                _thumbPos = new PointF(thumbX, _barPos.Y + 0.5f * _barSize.Height);
+                // Update quantized Value (this will also trigger ValueChanged / recalc as before)
                 _calculateValue(e);
+                Invalidate();
             }
         }
 
@@ -286,23 +375,32 @@ namespace GHelper.UI
             AnimateInner(ClientRectangle.Contains(e.Location) ? InnerHover : InnerNormal);
             Invalidate();
         }
+            _thumbClicked = false;
 
         protected override void OnMouseEnter(EventArgs e)
         {
             base.OnMouseEnter(e);
             if (!_moving) AnimateInner(InnerHover);
         }
+            // apply step rounding
+            _calculateValue(e);
 
         protected override void OnMouseLeave(EventArgs e)
         {
             base.OnMouseLeave(e);
             if (!_moving) AnimateInner(InnerNormal);
         }
+            // Animate to the step position
+            _thumbTargetPos = new PointF(
+                _barSize.Width / Math.Max(1, Max - Min) * (_value - Min) + _barPos.X,
+                _barPos.Y + 0.5f * _barSize.Height);
+            _snapAnimationStartPos = _thumbPos;
 
         protected override void Dispose(bool disposing)
         {
             if (disposing) _animTimer.Dispose();
             base.Dispose(disposing);
+            StartSnapAnimation();
         }
 
     }
