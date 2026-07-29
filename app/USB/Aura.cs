@@ -319,7 +319,7 @@ namespace GHelper.USB
         }
 
 
-        public static byte[] AuraMessage(AuraMode mode, Color color, Color color2, int speed, int direction)
+        public static byte[] AuraMessage(AuraMode mode, Color color, Color color2, int speed, int direction = 0)
         {
 
             byte[] msg = new byte[17];
