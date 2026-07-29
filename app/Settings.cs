@@ -55,6 +55,9 @@ namespace GHelper
         bool sliderGammaIgnore = false;
         bool activateCheck = false;
 
+        private readonly AuraDirection[] directionValues = { AuraDirection.Right, AuraDirection.Left, AuraDirection.Up, AuraDirection.Down };
+        private int keyboardDirectionIndex = 0;
+
         public SettingsForm()
         {
 
@@ -187,6 +190,7 @@ namespace GHelper
 
             buttonFans.Click += ButtonFans_Click;
             buttonKeyboard.Click += ButtonKeyboard_Click;
+            buttonKeyboardDirection.Click += ButtonKeyboardDirection_Click;
             buttonController.Click += ButtonHandheld_Click;
 
             labelCPUFan.Click += LabelCPUFan_Click;
@@ -1194,6 +1198,14 @@ namespace GHelper
             SetColorPicker("aura_color", Aura.Color1);
         }
 
+        private void ButtonKeyboardDirection_Click(object? sender, EventArgs e)
+        {
+            keyboardDirectionIndex = (keyboardDirectionIndex + 1) % directionValues.Length;
+            buttonKeyboardDirection.Text = directionValues[keyboardDirectionIndex].ToString();
+            AppConfig.Set("aura_direction", keyboardDirectionIndex);
+            Aura.ApplyAura();
+        }
+
         private void ButtonRearColor_Click(object? sender, EventArgs e)
         {
             SetColorPicker("rear_color", Aura.RearColor);
@@ -1243,6 +1255,8 @@ namespace GHelper
             comboKeyboard.SelectedValue = Aura.Mode;
             comboKeyboard.SelectedValueChanged += ComboKeyboard_SelectedValueChanged;
 
+            keyboardDirectionIndex = (int)Aura.Direction;
+            buttonKeyboardDirection.Text = directionValues[keyboardDirectionIndex].ToString();
 
             if (Aura.isWhite)
             {
@@ -1285,10 +1299,18 @@ namespace GHelper
             {
                 labelBacklight.Cursor = Cursors.Default;
                 labelBacklight.Text = Strings.AmbientModeResources;
-            } else
+            }
+            else if (Aura.Mode == AuraMode.AuraRainbow)
+            {
+                buttonKeyboardColor.Visible = false;
+                buttonKeyboardDirection.Visible = true;
+            }
+            else
             {
                 labelBacklight.Cursor = Cursors.Default;
                 labelBacklight.Text = "";
+                buttonKeyboardColor.Visible = true;
+                buttonKeyboardDirection.Visible = false;
             }
         }
 
@@ -2216,6 +2238,4 @@ namespace GHelper
         }
 
     }
-
-
 }

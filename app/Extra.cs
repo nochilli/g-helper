@@ -156,6 +156,7 @@ namespace GHelper
 
             labelSpeed.Text = Properties.Strings.AnimationSpeed;
             //labelBrightness.Text = Properties.Strings.Brightness;
+            labelDirection.Text = Properties.Strings.AnimationDirection;
 
             labelBacklightTimeout.Text = Properties.Strings.BacklightTimeout;
             //labelBacklightTimeoutPlugged.Text = Properties.Strings.BacklightTimeoutPlugged;
@@ -870,7 +871,6 @@ namespace GHelper
             AppConfig.Set("aura_speed", (int)comboKeyboardSpeed.SelectedValue);
             Aura.ApplyAura();
         }
-
 
         private void Keyboard_Shown(object? sender, EventArgs e)
         {

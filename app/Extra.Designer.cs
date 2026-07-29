@@ -82,6 +82,7 @@ namespace GHelper
             labelBacklightTimeout = new Label();
             labelSpeed = new Label();
             comboKeyboardSpeed = new RComboBox();
+            labelDirection = new Label();
             panelXGM = new Panel();
             checkXGM = new CheckBox();
             tableBacklight = new TableLayoutPanel();
@@ -764,6 +765,7 @@ namespace GHelper
             panelBacklightExtra.Controls.Add(labelBacklightTimeout);
             panelBacklightExtra.Controls.Add(labelSpeed);
             panelBacklightExtra.Controls.Add(comboKeyboardSpeed);
+            panelBacklightExtra.Controls.Add(labelDirection);
             panelBacklightExtra.Dock = DockStyle.Top;
             panelBacklightExtra.Location = new Point(0, 324);
             panelBacklightExtra.Margin = new Padding(5, 3, 5, 3);
@@ -775,7 +777,7 @@ namespace GHelper
             // numericBacklightPluggedTime
             // 
             numericBacklightPluggedTime.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            numericBacklightPluggedTime.Location = new Point(634, 63);
+            numericBacklightPluggedTime.Location = new Point(634, 113);
             numericBacklightPluggedTime.Margin = new Padding(5, 3, 5, 3);
             numericBacklightPluggedTime.Maximum = new decimal(new int[] { 3600, 0, 0, 0 });
             numericBacklightPluggedTime.Name = "numericBacklightPluggedTime";
@@ -787,7 +789,7 @@ namespace GHelper
             // numericBacklightTime
             // 
             numericBacklightTime.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            numericBacklightTime.Location = new Point(789, 63);
+            numericBacklightTime.Location = new Point(789, 113);
             numericBacklightTime.Margin = new Padding(5, 3, 5, 3);
             numericBacklightTime.Maximum = new decimal(new int[] { 3600, 0, 0, 0 });
             numericBacklightTime.Name = "numericBacklightTime";
@@ -798,7 +800,7 @@ namespace GHelper
             // 
             // labelBacklightTimeout
             // 
-            labelBacklightTimeout.Location = new Point(16, 63);
+            labelBacklightTimeout.Location = new Point(16, 113);
             labelBacklightTimeout.Margin = new Padding(5, 0, 5, 0);
             labelBacklightTimeout.Name = "labelBacklightTimeout";
             labelBacklightTimeout.Size = new Size(613, 47);
@@ -829,6 +831,14 @@ namespace GHelper
             comboKeyboardSpeed.Size = new Size(293, 40);
             comboKeyboardSpeed.TabIndex = 0;
             comboKeyboardSpeed.TabStop = false;
+            // labelDirection
+            // 
+            labelDirection.Location = new Point(16, 63);
+            labelDirection.Margin = new Padding(5, 0, 5, 0);
+            labelDirection.Name = "labelDirection";
+            labelDirection.Size = new Size(613, 43);
+            labelDirection.TabIndex = 51;
+            labelDirection.Text = "Animation Direction";
             // 
             // panelXMG
             // 
@@ -1842,6 +1852,7 @@ namespace GHelper
         private Label labelBacklightTimeout;
         private Label labelSpeed;
         private RComboBox comboKeyboardSpeed;
+        private Label labelDirection;
         private Panel panelXGM;
         private CheckBox checkXGM;
         private TableLayoutPanel tableBacklight;
