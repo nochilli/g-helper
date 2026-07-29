@@ -99,6 +99,7 @@ namespace GHelper
             tableLayoutKeyboard = new TableLayoutPanel();
             buttonKeyboard = new RButton();
             buttonKeyboardColor = new RColorButton();
+            buttonKeyboardDirection = new RButton();
             comboKeyboard = new RComboBox();
             panelKeyboardTitle = new Panel();
             buttonFnLock = new RButton();
@@ -1294,7 +1295,7 @@ namespace GHelper
             // 
             // tableLayoutKeyboard
             // 
-            tableLayoutKeyboard.AutoSize = true;
+            tableLayoutKeyboard.AutoSize = false;
             tableLayoutKeyboard.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             tableLayoutKeyboard.ColumnCount = 3;
             tableLayoutKeyboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33F));
@@ -1302,6 +1303,7 @@ namespace GHelper
             tableLayoutKeyboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33F));
             tableLayoutKeyboard.Controls.Add(buttonKeyboard, 0, 0);
             tableLayoutKeyboard.Controls.Add(buttonKeyboardColor, 0, 0);
+            tableLayoutKeyboard.Controls.Add(buttonKeyboardDirection, 0, 0);
             tableLayoutKeyboard.Controls.Add(comboKeyboard, 0, 0);
             tableLayoutKeyboard.Dock = DockStyle.Top;
             tableLayoutKeyboard.Location = new Point(20, 60);
@@ -1352,6 +1354,27 @@ namespace GHelper
             buttonKeyboardColor.TabIndex = 14;
             buttonKeyboardColor.Text = Properties.Strings.Color;
             buttonKeyboardColor.UseVisualStyleBackColor = false;
+            // 
+            // buttonKeyboardDirection
+            // 
+            buttonKeyboardDirection.Activated = false;
+            buttonKeyboardDirection.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            buttonKeyboardDirection.BackColor = SystemColors.ButtonHighlight;
+            buttonKeyboardDirection.BorderColor = Color.Transparent;
+            buttonKeyboardDirection.BorderRadius = 2;
+            buttonKeyboardDirection.Dock = DockStyle.Top;
+            buttonKeyboardDirection.FlatStyle = FlatStyle.Flat;
+            buttonKeyboardDirection.ForeColor = SystemColors.ControlText;
+            buttonKeyboardDirection.Location = new Point(0, 0);
+            buttonKeyboardDirection.Margin = new Padding(4);
+            buttonKeyboardDirection.Name = "buttonKeyboardDirection";
+            buttonKeyboardDirection.Secondary = false;
+            buttonKeyboardDirection.Size = new Size(254, 48);
+            buttonKeyboardDirection.TabIndex = 15;
+            buttonKeyboardDirection.Text = "→";
+            buttonKeyboardDirection.TextAlign = ContentAlignment.MiddleCenter;
+            buttonKeyboardDirection.UseVisualStyleBackColor = false;
+            buttonKeyboardDirection.Visible = false;
             // 
             // comboKeyboard
             // 
@@ -2230,6 +2253,7 @@ namespace GHelper
         private RButton buttonMiniled;
         private RButton buttonMatrix;
         private RColorButton buttonKeyboardColor;
+        private RButton buttonKeyboardDirection;
         private RButton buttonFans;
         private Slider sliderBattery;
         private Panel panelGPUTitle;
