@@ -83,7 +83,6 @@ namespace GHelper
             labelSpeed = new Label();
             comboKeyboardSpeed = new RComboBox();
             labelDirection = new Label();
-            comboKeyboardDirection = new RComboBox();
             panelXGM = new Panel();
             checkXGM = new CheckBox();
             tableBacklight = new TableLayoutPanel();
@@ -767,7 +766,6 @@ namespace GHelper
             panelBacklightExtra.Controls.Add(labelSpeed);
             panelBacklightExtra.Controls.Add(comboKeyboardSpeed);
             panelBacklightExtra.Controls.Add(labelDirection);
-            panelBacklightExtra.Controls.Add(comboKeyboardDirection);
             panelBacklightExtra.Dock = DockStyle.Top;
             panelBacklightExtra.Location = new Point(0, 324);
             panelBacklightExtra.Margin = new Padding(5, 3, 5, 3);
@@ -841,23 +839,6 @@ namespace GHelper
             labelDirection.Size = new Size(613, 43);
             labelDirection.TabIndex = 51;
             labelDirection.Text = "Animation Direction";
-            // 
-            // comboKeyboardDirection
-            // 
-            comboKeyboardDirection.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            comboKeyboardDirection.BorderColor = Color.White;
-            comboKeyboardDirection.ButtonColor = SystemColors.ControlLight;
-            comboKeyboardDirection.FlatStyle = FlatStyle.Flat;
-            comboKeyboardDirection.Font = new Font("Segoe UI", 9F);
-            comboKeyboardDirection.FormattingEnabled = true;
-            comboKeyboardDirection.ItemHeight = 32;
-            comboKeyboardDirection.Items.AddRange(new object[] { "Right", "Left", "Up", "Down" });
-            comboKeyboardDirection.Location = new Point(634, 63);
-            comboKeyboardDirection.Margin = new Padding(5, 11, 5, 9);
-            comboKeyboardDirection.Name = "comboKeyboardDirection";
-            comboKeyboardDirection.Size = new Size(293, 40);
-            comboKeyboardDirection.TabIndex = 52;
-            comboKeyboardDirection.TabStop = false;
             // 
             // panelXMG
             // 
@@ -1872,7 +1853,6 @@ namespace GHelper
         private Label labelSpeed;
         private RComboBox comboKeyboardSpeed;
         private Label labelDirection;
-        private RComboBox comboKeyboardDirection;
         private Panel panelXGM;
         private CheckBox checkXGM;
         private TableLayoutPanel tableBacklight;

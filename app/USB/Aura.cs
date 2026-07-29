@@ -699,6 +699,7 @@ namespace GHelper.USB
             buffer[5] = 1;
             buffer[6] = 0;
             buffer[7] = 0x10;
+            buffer[8] = 0;
 
             if (init || initDirect)
             {

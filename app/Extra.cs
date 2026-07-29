@@ -343,13 +343,6 @@ namespace GHelper
             comboKeyboardSpeed.SelectedValue = Aura.Speed;
             comboKeyboardSpeed.SelectedValueChanged += ComboKeyboardSpeed_SelectedValueChanged;
 
-            comboKeyboardDirection.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboKeyboardDirection.DataSource = new BindingSource(Aura.GetDirections(), null);
-            comboKeyboardDirection.DisplayMember = "Value";
-            comboKeyboardDirection.ValueMember = "Key";
-            comboKeyboardDirection.SelectedValue = Aura.Direction;
-            comboKeyboardDirection.SelectedValueChanged += ComboKeyboardDirection_SelectedValueChanged;
-
             // Keyboard
             checkAwake.Checked = AppConfig.IsNotFalse("keyboard_awake");
             checkBattery.Checked = AppConfig.IsOnBattery("keyboard_awake");
@@ -876,12 +869,6 @@ namespace GHelper
         private void ComboKeyboardSpeed_SelectedValueChanged(object? sender, EventArgs e)
         {
             AppConfig.Set("aura_speed", (int)comboKeyboardSpeed.SelectedValue);
-            Aura.ApplyAura();
-        }
-
-        private void ComboKeyboardDirection_SelectedValueChanged(object? sender, EventArgs e)
-        {
-            AppConfig.Set("aura_direction", (int)comboKeyboardDirection.SelectedValue);
             Aura.ApplyAura();
         }
 
