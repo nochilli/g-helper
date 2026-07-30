@@ -107,7 +107,7 @@ namespace GHelper.USB
             {
                 if (IsConnected())
                 {
-                    var msg = Aura.AuraMessage(mode, color, color2, speed);
+                    var msg = Aura.AuraMessage(mode, color, color2, speed, 0x00);
                     msg[0] = XGM_REPORT_ID;
                     Write(msg);
                     Write([XGM_REPORT_ID, 0xb4]);

@@ -144,6 +144,7 @@ namespace GHelper
             buttonResetBindings.Text = Properties.Strings.Reset;
             labelBacklightTitle.Text = Properties.Strings.LaptopBacklight;
             labelSettings.Text = Properties.Strings.Other;
+            labelDirection.Text = Properties.Strings.AnimationDirection;
 
             checkAwake.Text = Properties.Strings.Awake;
             checkSleep.Text = Properties.Strings.Sleep;
@@ -341,6 +342,13 @@ namespace GHelper
             comboKeyboardSpeed.ValueMember = "Key";
             comboKeyboardSpeed.SelectedValue = Aura.Speed;
             comboKeyboardSpeed.SelectedValueChanged += ComboKeyboardSpeed_SelectedValueChanged;
+
+            comboKeyboardDirection.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboKeyboardDirection.DataSource = new BindingSource(Aura.GetDirections(), null);
+            comboKeyboardDirection.DisplayMember = "Value";
+            comboKeyboardDirection.ValueMember = "Key";
+            comboKeyboardDirection.SelectedValue = Aura.Direction;
+            comboKeyboardDirection.SelectedValueChanged += ComboKeyboardDirection_SelectedValueChanged;
 
             // Keyboard
             checkAwake.Checked = AppConfig.IsNotFalse("keyboard_awake");
@@ -873,6 +881,11 @@ namespace GHelper
             Aura.ApplyAura();
         }
 
+        private void ComboKeyboardDirection_SelectedValueChanged(object? sender, EventArgs e)
+        {
+            AppConfig.Set("aura_direction", (int)comboKeyboardDirection.SelectedValue);
+            Aura.ApplyAura();
+        }
 
         private void Keyboard_Shown(object? sender, EventArgs e)
         {
