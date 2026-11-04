@@ -1439,6 +1439,7 @@ namespace GHelper
         private void ComboKeyboard_SelectedValueChanged(object? sender, EventArgs e)
         {
             AppConfig.Set("aura_mode", (int)comboKeyboard.SelectedValue);
+            var selectedMode = (AuraMode)comboKeyboard.SelectedValue;
             UpdateAuraControls();
             SetAura();
         }
