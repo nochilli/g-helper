@@ -1274,19 +1274,6 @@ namespace GHelper
             comboKeyboard.SelectedValue = Aura.Mode;
             comboKeyboard.SelectedValueChanged += ComboKeyboard_SelectedValueChanged;
 
-            var disabledModes = new[]
-            {
-                AuraMode.AuraColorCycle,
-                AuraMode.AuraRainbow,
-                AuraMode.HEATMAP,
-                AuraMode.GPUMODE,
-                AuraMode.AMBIENT,
-                AuraMode.BATTERY,
-                AuraMode.ZONETEST,
-                AuraMode.Rain
-            };
-            buttonKeyboardColor.Enabled = !disabledModes.Contains(Aura.Mode);
-
             Aura.Direction = (AuraDirection)AppConfig.Get("aura_direction");
             comboKeyboardDirection.DropDownStyle = ComboBoxStyle.DropDownList;
             comboKeyboardDirection.DataSource = new BindingSource(Aura.GetDirections(), null);
