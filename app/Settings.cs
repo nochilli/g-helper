@@ -1408,15 +1408,16 @@ namespace GHelper
             {
                 if (tableLayoutKeyboard.Controls.Contains(buttonKeyboardColor))
                     tableLayoutKeyboard.Controls.Remove(buttonKeyboardColor);
-
                 if (!tableLayoutKeyboard.Controls.Contains(comboKeyboardDirection))
                     tableLayoutKeyboard.Controls.Add(comboKeyboardDirection, 1, 0);
 
                 comboKeyboardDirection.Visible = true;
+                buttonKeyboardColor.Visible = false;
                 comboKeyboardDirection.SelectedValue = Aura.Direction;
             }
             else
             {
+                comboKeyboardDirection.Visible = false;
                 if (tableLayoutKeyboard.Controls.Contains(comboKeyboardDirection))
                     tableLayoutKeyboard.Controls.Remove(comboKeyboardDirection);
 
