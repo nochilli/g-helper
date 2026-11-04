@@ -67,6 +67,14 @@ namespace GHelper.USB
         Fast = 2,
     }
 
+    public enum AuraDirection : int
+    {
+        Right = 0,
+        Left = 1,
+        Up = 2,
+        Down = 3,
+    }
+
     public enum AuraBacklightType : byte
     {
         Unknown = 0x00,
@@ -86,6 +94,7 @@ namespace GHelper.USB
 
         private static AuraMode mode = AuraMode.AuraStatic;
         private static AuraSpeed speed = AuraSpeed.Normal;
+        private static AuraDirection direction = AuraDirection.Right;
 
         private static bool backlight = false;
         private static bool initDirect = false;
@@ -140,6 +149,22 @@ namespace GHelper.USB
             };
         }
 
+        public static Dictionary<AuraDirection, string> GetDirections()
+        {
+            return new Dictionary<AuraDirection, string>
+            {
+                { AuraDirection.Left, Properties.Strings.AuraLeft },
+                { AuraDirection.Right, Properties.Strings.AuraRight },
+                { AuraDirection.Up, Properties.Strings.AuraUp },
+                { AuraDirection.Down, Properties.Strings.AuraDown }
+            };
+        }
+
+        public static AuraDirection Direction
+        {
+            get { return direction; }
+            set { direction = GetDirections().ContainsKey(value) ? value : AuraDirection.Right; }
+        }
 
         public static Dictionary<AuraMode, string> GetModes()
         {
@@ -288,7 +313,7 @@ namespace GHelper.USB
         }
 
 
-        public static byte[] AuraMessage(AuraMode mode, Color color, Color color2, int speed)
+        public static byte[] AuraMessage(AuraMode mode, Color color, Color color2, int speed, int direction = 0)
         {
 
             byte[] msg = new byte[17];
@@ -300,7 +325,7 @@ namespace GHelper.USB
             msg[5] = isWhite ? (byte)0 : color.G; // G
             msg[6] = isWhite ? (byte)0 : color.B; // B
             msg[7] = (byte)speed; // aura.speed as u8;
-            msg[8] = 0x00; // aura.direction as u8;
+            msg[8] = (byte)direction; // aura.direction as u8;
             msg[9] = (color.R == 0 && color.G == 0 && color.B == 0) ? (byte)0xFF : (mode == AuraMode.AuraBreathe ? (byte)0x01 : (byte)0x00); // random color flag
             msg[10] = color2.R; // R
             msg[11] = isWhite ? (byte)0 : color2.G; // G
@@ -977,12 +1002,14 @@ namespace GHelper.USB
                 effectiveSpeed = AuraSpeed.Slow;
 
             int _speed = (effectiveSpeed == AuraSpeed.Normal) ? 0xeb : (effectiveSpeed == AuraSpeed.Fast) ? 0xf5 : 0xe1;
+            Direction = (AuraDirection)AppConfig.Get("aura_direction");
+            int _direction = (Direction == AuraDirection.Right) ? 0x00 : (Direction == AuraDirection.Left) ? 0x01 : (Direction == AuraDirection.Up) ? 0x02 : 0x03;
 
             PeripheralsProvider.SyncMiceWithKeyboardAura();
             PeripheralsProvider.SyncKeyboardsWithAura();
             PeripheralsProvider.SyncHeadsetsWithAura();
 
-            AsusHid.Write(new List<byte[]> { AuraMessage(Mode, _Color1, _Color2, _speed), MESSAGE_SET, MESSAGE_APPLY }, "Aura", AsusHid.MAIN_AURA_PIDS);
+            AsusHid.Write(new List<byte[]> { AuraMessage(Mode, _Color1, _Color2, _speed, _direction), MESSAGE_SET, MESSAGE_APPLY }, "Aura", AsusHid.MAIN_AURA_PIDS);
             XGM.LightMode(Mode, _Color1, _Color2, _speed);
 
             if (isACPI)

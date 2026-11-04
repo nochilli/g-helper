@@ -338,7 +338,43 @@ namespace GHelper.Properties {
                 return ResourceManager.GetString("AuraFast", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Left.
+        /// </summary>
+        internal static string AuraLeft {
+            get {
+                return ResourceManager.GetString("AuraLeft", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Right.
+        /// </summary>
+        internal static string AuraRight {
+            get {
+                return ResourceManager.GetString("AuraRight", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Up.
+        /// </summary>
+        internal static string AuraUp {
+            get {
+                return ResourceManager.GetString("AuraUp", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Down.
+        /// </summary>
+        internal static string AuraDown {
+            get {
+                return ResourceManager.GetString("AuraDown", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Lighting Mode.
         /// </summary>
