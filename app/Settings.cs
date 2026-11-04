@@ -1274,6 +1274,15 @@ namespace GHelper
             comboKeyboard.SelectedValue = Aura.Mode;
             comboKeyboard.SelectedValueChanged += ComboKeyboard_SelectedValueChanged;
 
+            Aura.Direction = (AuraDirection)AppConfig.Get("aura_direction");
+            comboKeyboardDirection.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboKeyboardDirection.DataSource = new BindingSource(Aura.GetDirections(), null);
+            comboKeyboardDirection.DisplayMember = "Value";
+            comboKeyboardDirection.ValueMember = "Key";
+            comboKeyboardDirection.SelectedValue = Aura.Direction;
+            comboKeyboardDirection.SelectedValueChanged += ComboKeyboardDirection_SelectedValueChanged;
+
+            UpdateAuraControls();
 
             if (Aura.isWhite)
             {
@@ -1391,6 +1400,10 @@ namespace GHelper
         private void ComboKeyboard_SelectedValueChanged(object? sender, EventArgs e)
         {
             AppConfig.Set("aura_mode", (int)comboKeyboard.SelectedValue);
+            var selectedMode = (AuraMode)comboKeyboard.SelectedValue;
+            AppConfig.Set("aura_mode", (int)selectedMode);
+            Aura.Mode = selectedMode;
+            UpdateAuraControls();
             SetAura();
         }
 
@@ -1399,6 +1412,55 @@ namespace GHelper
         {
             ScreenControl.SetAutoRefresh(0);
             ScreenControl.SetScreen(ScreenControl.MAX_REFRESH, 1);
+        }
+
+        private void UpdateAuraControls()
+        {
+            bool showDirectionDropdown = !Aura.isWhite && Aura.Mode == AuraMode.AuraRainbow;
+            bool showColorButton = !Aura.isWhite && !showDirectionDropdown;
+
+            tableLayoutKeyboard.SuspendLayout();
+
+            if (showDirectionDropdown)
+            {
+                if (tableLayoutKeyboard.Controls.Contains(buttonKeyboardColor))
+                    tableLayoutKeyboard.Controls.Remove(buttonKeyboardColor);
+                if (!tableLayoutKeyboard.Controls.Contains(comboKeyboardDirection))
+                    tableLayoutKeyboard.Controls.Add(comboKeyboardDirection, 1, 0);
+
+                comboKeyboardDirection.Visible = true;
+                buttonKeyboardColor.Visible = false;
+                comboKeyboardDirection.SelectedValue = Aura.Direction;
+            }
+            else
+            {
+                comboKeyboardDirection.Visible = false;
+                if (tableLayoutKeyboard.Controls.Contains(comboKeyboardDirection))
+                    tableLayoutKeyboard.Controls.Remove(comboKeyboardDirection);
+
+                if (showColorButton)
+                {
+                    if (!tableLayoutKeyboard.Controls.Contains(buttonKeyboardColor))
+                        tableLayoutKeyboard.Controls.Add(buttonKeyboardColor, 1, 0);
+                    buttonKeyboardColor.Visible = true;
+                }
+                else if (tableLayoutKeyboard.Controls.Contains(buttonKeyboardColor))
+                {
+                    tableLayoutKeyboard.Controls.Remove(buttonKeyboardColor);
+                }
+            }
+
+            tableLayoutKeyboard.ResumeLayout();
+        }
+
+        private void ComboKeyboardDirection_SelectedValueChanged(object? sender, EventArgs e)
+        {
+            if (comboKeyboardDirection.SelectedValue is null)
+                return;
+
+            Aura.Direction = (AuraDirection)comboKeyboardDirection.SelectedValue;
+            AppConfig.Set("aura_direction", (int)Aura.Direction);
+            SetAura();
         }
 
         private void Button60Hz_Click(object? sender, EventArgs e)

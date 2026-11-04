@@ -97,6 +97,7 @@ namespace GHelper
             tableLayoutKeyboard = new TableLayoutPanel();
             buttonKeyboard = new RButton();
             buttonKeyboardColor = new RColorButton();
+            comboKeyboardDirection = new RComboBox();
             comboKeyboard = new RComboBox();
             panelKeyboardTitle = new Panel();
             buttonFnLock = new RButton();
@@ -1242,9 +1243,10 @@ namespace GHelper
             tableLayoutKeyboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33F));
             tableLayoutKeyboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33F));
             tableLayoutKeyboard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33F));
-            tableLayoutKeyboard.Controls.Add(buttonKeyboard, 0, 0);
-            tableLayoutKeyboard.Controls.Add(buttonKeyboardColor, 0, 0);
+            tableLayoutKeyboard.Controls.Add(buttonKeyboard, 2, 0);
+            tableLayoutKeyboard.Controls.Add(buttonKeyboardColor, 1, 0);
             tableLayoutKeyboard.Controls.Add(comboKeyboard, 0, 0);
+            tableLayoutKeyboard.Controls.Add(comboKeyboardDirection, 1, 0);
             tableLayoutKeyboard.Dock = DockStyle.Top;
             tableLayoutKeyboard.Location = new Point(20, 60);
             tableLayoutKeyboard.Margin = new Padding(8, 4, 8, 4);
@@ -1294,7 +1296,22 @@ namespace GHelper
             buttonKeyboardColor.TabIndex = 14;
             buttonKeyboardColor.Text = Properties.Strings.Color;
             buttonKeyboardColor.UseVisualStyleBackColor = false;
+            //
+            // comboKeyboardDirection
             // 
+            comboKeyboardDirection.BorderColor = Color.White;
+            comboKeyboardDirection.ButtonColor = Color.FromArgb(255, 255, 255);
+            comboKeyboardDirection.Dock = DockStyle.Top;
+            comboKeyboardDirection.FlatStyle = FlatStyle.Flat;
+            comboKeyboardDirection.Font = new Font("Segoe UI", 9F);
+            comboKeyboardDirection.FormattingEnabled = true;
+            comboKeyboardDirection.Location = new Point(7, 7);
+            comboKeyboardDirection.Margin = new Padding(7, 7, 7, 4);
+            comboKeyboardDirection.Name = "comboKeyboardDirection";
+            comboKeyboardDirection.Size = new Size(248, 40);
+            comboKeyboardDirection.TabIndex = 14;
+            comboKeyboardDirection.Visible = false;
+            //  
             // comboKeyboard
             // 
             comboKeyboard.BorderColor = Color.White;
@@ -2182,6 +2199,7 @@ namespace GHelper
         private RComboBox comboMatrixRunning;
         private RComboBox comboMatrix;
         private TableLayoutPanel tableLayoutKeyboard;
+        private RComboBox comboKeyboardDirection;
         private RComboBox comboKeyboard;
         private RButton button120Hz;
         private RButton buttonOptimized;
