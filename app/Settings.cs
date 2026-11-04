@@ -1257,6 +1257,18 @@ namespace GHelper
             panelRearLight.Visible = true;
         }
 
+        private static bool IsAuraColorSelectorDisabled(AuraMode mode)
+        {
+            return mode == AuraMode.AuraColorCycle
+                || mode == AuraMode.AuraRainbow
+                || mode == AuraMode.HEATMAP
+                || mode == AuraMode.GPUMODE
+                || mode == AuraMode.AMBIENT
+                || mode == AuraMode.BATTERY
+                || mode == AuraMode.ZONETEST
+                || mode == AuraMode.Rain;
+        }
+
         public void InitAura()
         {
             comboKeyboard.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -1281,6 +1293,8 @@ namespace GHelper
             comboKeyboardDirection.ValueMember = "Key";
             comboKeyboardDirection.SelectedValue = Aura.Direction;
             comboKeyboardDirection.SelectedValueChanged += ComboKeyboardDirection_SelectedValueChanged;
+
+            buttonKeyboardColor.Enabled = !IsAuraColorSelectorDisabled(Aura.Mode);
 
             UpdateAuraControls();
 
@@ -1400,7 +1414,8 @@ namespace GHelper
         private void UpdateAuraControls()
         {
             bool showDirectionDropdown = !Aura.isWhite && Aura.Mode == AuraMode.AuraRainbow;
-            bool showColorButton = !Aura.isWhite && !showDirectionDropdown;
+            bool showColorButton = !Aura.isWhite && !showDirectionDropdown && !IsAuraColorSelectorDisabled(Aura.Mode);
+            buttonKeyboardColor.Enabled = !IsAuraColorSelectorDisabled(Aura.Mode);
 
             tableLayoutKeyboard.SuspendLayout();
 
